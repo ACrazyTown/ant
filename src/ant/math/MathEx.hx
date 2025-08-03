@@ -26,6 +26,7 @@ class MathEx
      * @param ratio Interpolation ratio
      * @return Interpolated value
      */
+    // TODO: replace FlxG.elapsed with a custom arg
     public static inline function fpsLerp(base:Float, target:Float, ratio:Float):Float
     {   
         var h:Float = -(1/60) / logBase(2, 1 - ratio);

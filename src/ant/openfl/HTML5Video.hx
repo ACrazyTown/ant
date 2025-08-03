@@ -1,5 +1,6 @@
 package ant.openfl;
 
+import openfl.media.SoundTransform;
 import openfl.events.NetStatusEvent;
 import openfl.events.AsyncErrorEvent;
 import openfl.net.NetStream;
@@ -8,36 +9,46 @@ import openfl.media.Video;
 
 class HTML5Video extends Video
 {
+    public var volume(get, set):Float;
+
     var onComplete:Null<Void->Void>;
 
-    var connection:NetConnection;
-    var stream:NetStream;
+    var _transform:SoundTransform;
+    var _connection:NetConnection;
+    var _stream:NetStream;
 
     public function new(?onComplete:Void->Void)
     {
         super();
         this.onComplete = onComplete;
 
-        connection = new NetConnection();
-        connection.connect(null);
+        _transform = new SoundTransform();
 
-        stream = new NetStream(connection);
-        stream.client = {
-            onMetaData: streamOnMetaData
+        _connection = new NetConnection();
+        _connection.connect(null);
+
+        _stream = new NetStream(_connection);
+        _stream.client = {
+            onMetaData: _streamOnMetaData
         };
 
-        stream.addEventListener(AsyncErrorEvent.ASYNC_ERROR, streamOnAsyncError);
-        connection.addEventListener(NetStatusEvent.NET_STATUS, connectionOnNetStatus);
+        _stream.addEventListener(AsyncErrorEvent.ASYNC_ERROR, _streamOnAsyncError);
+        _connection.addEventListener(NetStatusEvent.NET_STATUS, _connectionOnNetStatus);
     }
 
-    function streamOnMetaData(data:Dynamic)
+    public function play(url:String):Void
     {
-        attachNetStream(stream);
+        _stream.play(url);
+    }
+
+    function _streamOnMetaData(data:Dynamic)
+    {
+        attachNetStream(_stream);
         width = videoWidth;
         height = videoHeight;
     }
 
-    function streamOnAsyncError(event:AsyncErrorEvent):Void
+    function _streamOnAsyncError(event:AsyncErrorEvent):Void
     {
         trace('Failed to load video ($event)');
         
@@ -45,12 +56,31 @@ class HTML5Video extends Video
             onComplete();
     }
 
-    function connectionOnNetStatus(event:NetStatusEvent):Void
+    function _connectionOnNetStatus(event:NetStatusEvent):Void
     {
-        if (event.info.code == "NetStream.Play.Complete") 
+        if (event.info.code == "Net_stream.Play.Complete") 
         {
             if (onComplete != null)
                 onComplete();
         }
     }
+
+    function _updateTransform():Void
+    {
+        if (_stream != null)
+            _stream.soundTransform = _transform;
+    }
+
+    @:noCompletion function set_volume(value:Float):Float 
+    {
+        _transform.volume = value;
+        _updateTransform();
+
+        return value;
+    }
+
+	@:noCompletion function get_volume():Float 
+    {
+		return _transform.volume;
+	}
 }
