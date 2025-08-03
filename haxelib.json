@@ -1,0 +1,8 @@
+{
+    "name": "ant",
+    "license": "MIT",
+    "version": "0.1.0",
+    "releasenote": "",
+    "contributors": ["ACrazyTown"],
+    "classPath": "src"
+}
