@@ -11,7 +11,7 @@ import openfl.display.GraphicsShader;
  * 
  * @see https://github.com/loudoweb/openfl-shaders/blob/master/openfl/shaders/blendMode/Overlay.hx
  */
-class OverlayBlend extends GraphicsShader
+class Overlay extends GraphicsShader
 {
     public var foreground(get, set):BitmapData;
     public var alpha(get, set):Float;
