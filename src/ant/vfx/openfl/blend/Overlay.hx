@@ -76,7 +76,7 @@ class Overlay extends GraphicsShader
 
         vec3 blendOverlay(vec3 base, vec3 blend, float opacity) 
         {
-            return (blendOverlay(base, blend) + base * (1.0 - opacity));
+            return mix(base, blendOverlay(base, blend), opacity);
         }
         
         void main() 
@@ -87,22 +87,22 @@ class Overlay extends GraphicsShader
             vec4 fgColor = texture2D(_foreground, openfl_TextureCoordv * fgCoordOffset);
 
             vec3 blendedColor = blendOverlay(bgColor.rgb, fgColor.rgb, fgColor.a * _alpha);
+            float outAlpha = _alpha + bgColor.a * (1.0 - _alpha);
 
-            gl_FragColor = vec4(blendedColor, bgColor.a) * openfl_Alphav;
+            gl_FragColor = vec4(blendedColor, outAlpha) * openfl_Alphav;
         }
-        
     ")
-	public function new(foreground:BitmapData, ?alpha:Float = 1)
+    public function new(foreground:BitmapData, ?alpha:Float = 1)
     {
         super();
 
-		this.foreground = foreground;
+        this.foreground = foreground;
         this.alpha = alpha;
         useScaledCoords = true;
-	}
+    }
 
-	@:noCompletion inline function get_foreground():BitmapData
-		return _foreground.input;
+    @:noCompletion inline function get_foreground():BitmapData
+        return _foreground.input;
 
     @:noCompletion function set_foreground(value:BitmapData):BitmapData
     {
@@ -111,21 +111,21 @@ class Overlay extends GraphicsShader
         return value;
     }
 
-	@:noCompletion inline function get_alpha():Float
-		return _alpha.value[0];
+    @:noCompletion inline function get_alpha():Float
+        return _alpha.value[0];
 
-	@:noCompletion function set_alpha(value:Float):Float 
+    @:noCompletion function set_alpha(value:Float):Float 
     {
         _alpha.value = [value];
         return value;
     }
 
-	@:noCompletion inline function get_useScaledCoords():Bool
-		return _useScaledCoords.value[0];
+    @:noCompletion inline function get_useScaledCoords():Bool
+        return _useScaledCoords.value[0];
 
-	@:noCompletion function set_useScaledCoords(value:Bool):Bool
+    @:noCompletion function set_useScaledCoords(value:Bool):Bool
     {
-		_useScaledCoords.value = [value];
-		return value;
+        _useScaledCoords.value = [value];
+        return value;
     }
 }
